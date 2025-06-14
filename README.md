@@ -125,7 +125,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 .\venv\Scripts\Activate.ps1
 ```
-
+---
 ## Backend
 
 To run backend run the following command inside the venv
