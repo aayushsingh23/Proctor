@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Proctoring Session</title>
+    <!-- 1. Include the Socket.IO client library from a CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        video {
+            border: 2px solid #333;
+            transform: scaleX(-1);
+        }
+
+        /* Flip video for mirror effect */
+        canvas {
+            display: none;
+        }
+
+        /* The canvas is for processing, not for display */
+    </style>
+</head>
+
+<body>
+
+    <h1>AI Proctoring Session</h1>
+    <p>Status: <b id="status">Connecting to server...</b></p>
+
+    <!-- Video element to display the camera feed to the user -->
+    <video id="video" width="640" height="480" autoplay muted></video>
+
+    <!-- Canvas element for grabbing frames from the video -->
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 2. Connect to the Flask-SocketIO server
+            // It automatically knows the host and port
+            const socket = io();
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const status = document.getElementById('status');
+
+            // 3. Event handler for successful connection
+            socket.on('connect', () => {
+                console.log('Successfully connected to the server!');
+                status.textContent = 'Connected. Starting camera...';
+                startCamera();
+            });
+
+            const startCamera = async () => {
+                try {
+                    // 4. Request access to the user's webcam
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                    status.textContent = 'Streaming video data...';
+
+                    // 5. Send a frame to the server every 200 milliseconds (5 FPS)
+                    setInterval(() => {
+                        // Draw the current video frame onto the hidden canvas
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        // Convert the canvas image to a Base64-encoded JPEG string
+                        const imageData = canvas.toDataURL('image/jpeg', 0.7); // Quality at 70%
+
+                        // Send the image data to the server via the 'video_stream' event
+                        socket.emit('video_stream', { image: imageData });
+
+                    }, 200);
+
+                } catch (err) {
+                    console.error("Error accessing camera: ", err);
+                    status.textContent = 'Error: Could not access the camera.';
+                }
+            };
+        });
+    </script>
+
+</body>
+
+</html>
