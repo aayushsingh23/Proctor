@@ -99,6 +99,8 @@ Reports are generated every 10 seconds and appended to a session log. A sample e
     "BROWSER_TAB_SWITCHED"
   ]
 }
+```
+---
 ## venv setup
 
  1. Go to your directory
