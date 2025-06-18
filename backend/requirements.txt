@@ -1,0 +1,10 @@
+flask
+python-dotenv
+pydantic
+opencv-python
+dlib
+face_recognition
+fer
+librosa
+gunicorn  
+#mediapipe
