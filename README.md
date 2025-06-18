@@ -122,14 +122,45 @@ venv\Scripts\activate
 
 ```
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-
+```
+```
 .\venv\Scripts\Activate.ps1
 ```
 ---
 ## Backend
 
-To run backend run the following command inside the venv
+-> To successfully install dlib on your Windows machine, you must have:
+- A compatible Python version (3.11 works).
+- CMake installed and added to the system PATH.
+- Visual Studio Build Tools with the C++ workload. 
 
+-> Install Cmake from its official page [CMake Download](https://www.google.com/url?sa=E&q=https%3A%2F%2Fcmake.org%2Fdownload%2F)
+
+-> Install Visual Studio Build tools from its official page [Visual Studio Build Tools](https://www.google.com/url?sa=E&q=https%3A%2F%2Fvisualstudio.microsoft.com%2Fvisual-studio-build-tools%2F)
+
+-> Resart your PC to ensure PATH variables have been set.
+
+-> Install Cors
+```
+pip install Flask-CORS
+```
+
+-> Install requirements
+```
+pip install -r requirements.txt
+```
+
+-> To run backend run the following command inside the venv
 ```
 python app.py
 ```
+
+---
+## Frontend
+
+1. Open your entire project folder in Visual Studio Code.
+2. If you don't have the "Live Server" extension, go to the Extensions view (`Ctrl+Shift+X`), search for Live Server, and install it.
+3. In the VS Code Explorer file tree, find `client/index.html`.
+4. Right-click on index.html and select "Open with Live Server".
+
+This will automatically open a new tab in your default web browser with a URL like `http://127.0.0.1:5500/client/index.html`.
