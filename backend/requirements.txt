@@ -1,10 +1,27 @@
-flask
-python-dotenv
-pydantic
-opencv-python
-dlib
-face_recognition
-fer
-librosa
-gunicorn  
-#mediapipe
+# backend/requirements.txt
+
+# Core Application
+Flask==2.3.3
+Flask-CORS==4.0.0
+python-dotenv==1.0.1
+pydantic==1.10.12
+gunicorn==21.2.0
+
+# Computer Vision & AI
+opencv-python==4.8.1.78
+# dlib==19.24.2
+deepface==0.0.79
+mediapipe==0.10.9
+
+# TensorFlow (last monolithic version with keras included)
+tensorflow==2.10.0
+
+# Image & Math Utils
+numpy==1.23.5
+Pillow==9.5.0
+scipy==1.10.1
+
+# For Face Recognition Dependencies
+keras==2.10.0
+tensorflow-estimator==2.10.0
+
