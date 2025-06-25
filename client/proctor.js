@@ -9,6 +9,7 @@ const API_ENDPOINT = 'http://127.0.0.1:5000/analyze';
 
 let keystrokeCount = 0;
 let focusLostCount = 0;
+suspiciousKeysThisInterval.clear();
 
 // --- Task 1: Handling Browser Change (Focus Loss) ---
 document.addEventListener('visibilitychange', () => {
@@ -16,6 +17,11 @@ document.addEventListener('visibilitychange', () => {
         console.warn('FLAG: User switched tabs or minimized the window.');
         focusLostCount++;
     }
+});
+
+document.addEventListener('paste', (e) => {
+    suspiciousKeysThisInterval.add('paste-event');
+    console.warn("📋 Paste event detected via clipboard interaction.");
 });
 
 // --- Task 2: Keystroke Counting ---

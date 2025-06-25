@@ -58,7 +58,8 @@ def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> l
         "ctrl+a": "SELECT_ALL_DETECTED",
         "alt+tab": "WINDOW_SWITCH_DETECTED",
         "ctrl+tab": "TAB_SWITCH_DETECTED",
-        "cmd+tab": "CMD_TAB_SWITCH_DETECTED",  # For macOS clients
+        "cmd+tab": "CMD_TAB_SWITCH_DETECTED",
+        "paste-event": "PASTE_ACTION_DETECTED"  # For macOS clients
     }
 
     for combo in request_data.keystroke_map:
