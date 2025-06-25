@@ -14,6 +14,7 @@ from cv_analyzer import VisionAnalyzer  # Your own head pose estimation module
 from deepface import DeepFace
 
 import traceback
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -38,9 +39,9 @@ except Exception as e:
 def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> list[str]:
     flags = []
     if report.head_pose:
-        if report.head_pose.yaw > 25 or report.head_pose.yaw < -25:
+        if report.head_pose.yaw > 20 or report.head_pose.yaw < -20:
             flags.append("CANDIDATE_LOOKING_AWAY")
-        if report.head_pose.pitch > 20:
+        if report.head_pose.pitch > 15:
             flags.append("CANDIDATE_LOOKING_DOWN")
     if report.people_count > 1:
         flags.append("MULTIPLE_FACES_DETECTED")
@@ -48,6 +49,22 @@ def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> l
         flags.append("FACE_NOT_DETECTED")
     if request_data.focus_lost_count > 0:
         flags.append("BROWSER_FOCUS_LOST")
+    
+    # Check for suspicious keystrokes
+    suspicious_keys = {
+        "ctrl+c": "COPY_ACTION_DETECTED",
+        "ctrl+v": "PASTE_ACTION_DETECTED",
+        "ctrl+x": "CUT_ACTION_DETECTED",
+        "ctrl+a": "SELECT_ALL_DETECTED",
+        "alt+tab": "WINDOW_SWITCH_DETECTED",
+        "ctrl+tab": "TAB_SWITCH_DETECTED",
+        "cmd+tab": "CMD_TAB_SWITCH_DETECTED",  # For macOS clients
+    }
+
+    for combo in request_data.keystroke_map:
+        key = combo.lower()
+        if key in suspicious_keys:
+            flags.append(suspicious_keys[key])
     return flags
 
 # Main analysis route
@@ -97,7 +114,8 @@ def analyze():
                 people_count=vision_results["people_count"],
                 head_pose=head_pose_data,
                 dominant_emotion=dominant_emotion_result,
-                flags=[]
+                flags=[],
+                timestamp=datetime.utcnow().isoformat()
             )
         except Exception as e:
             print("❌ Failed to create AnalysisResponse:")

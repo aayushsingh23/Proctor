@@ -9,6 +9,7 @@ class AnalysisRequest(BaseModel):
     image: str  # Base64-encoded image string
     keystroke_count: int
     focus_lost_count: int
+    keystroke_map: Optional[List[str]] = []
 
 
 class HeadPose(BaseModel):
@@ -29,3 +30,4 @@ class AnalysisResponse(BaseModel):
     head_pose: Optional[HeadPose] = None
     dominant_emotion: Optional[str] = None
     flags: List[str]
+    timestamp: str

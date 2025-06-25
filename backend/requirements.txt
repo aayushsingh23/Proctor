@@ -1,27 +1,24 @@
-# backend/requirements.txt
-
-# Core Application
+# Flask and related
 Flask==2.3.3
-Flask-CORS==4.0.0
+flask-cors==4.0.0
 python-dotenv==1.0.1
-pydantic==1.10.12
-gunicorn==21.2.0
 
-# Computer Vision & AI
-opencv-python==4.8.1.78
-# dlib==19.24.2
-deepface==0.0.79
+# Pydantic v1 (since you're using .dict() instead of .model_dump())
+pydantic==1.10.13
+
+# DeepFace and its core dependencies
+deepface==0.0.87
+opencv-python-headless==4.9.0.80
+tensorflow==2.10.0  # CPU version
+keras==2.10.0
+mtcnn==0.1.1
+gdown==4.7.1
+
+# Mediapipe for face detection backend
 mediapipe==0.10.9
 
-# TensorFlow (last monolithic version with keras included)
-tensorflow==2.10.0
+# Ensure protobuf version is compatible with DeepFace and Mediapipe
+protobuf==3.20.3
 
-# Image & Math Utils
-numpy==1.23.5
-Pillow==9.5.0
-scipy==1.10.1
-
-# For Face Recognition Dependencies
-keras==2.10.0
-tensorflow-estimator==2.10.0
-
+# For numpy operations
+numpy==1.24.4

@@ -19,8 +19,24 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // --- Task 2: Keystroke Counting ---
-document.addEventListener('keydown', () => {
+let suspiciousKeysThisInterval = new Set();
+
+document.addEventListener('keydown', (e) => {
     keystrokeCount++;
+
+    const isCtrl = e.ctrlKey || e.metaKey;  // Ctrl for Windows/Linux, Cmd for macOS
+    const isAlt = e.altKey;
+
+    const key = e.key.toLowerCase();
+
+    // Handle common cheating patterns
+    if (isCtrl && key === 'c') suspiciousKeysThisInterval.add('ctrl+c');
+    if (isCtrl && key === 'v') suspiciousKeysThisInterval.add('ctrl+v');
+    if (isCtrl && key === 'x') suspiciousKeysThisInterval.add('ctrl+x');
+    if (isCtrl && key === 'a') suspiciousKeysThisInterval.add('ctrl+a');
+    if (isCtrl && key === 'tab') suspiciousKeysThisInterval.add('ctrl+tab');
+    if (isAlt && key === 'tab') suspiciousKeysThisInterval.add('alt+tab');
+    if (e.metaKey && key === 'tab') suspiciousKeysThisInterval.add('cmd+tab');  // macOS
 });
 
 // --- Main Data Capture and API Call Loop ---
@@ -44,7 +60,8 @@ async function startProctoring() {
         const requestData = {
             image: imageBase64,
             keystroke_count: keystrokeCount,
-            focus_lost_count: focusLostCount
+            focus_lost_count: focusLostCount,
+            keystroke_map: Array.from(suspiciousKeysThisInterval)
         };
 
         // 3. Call the API
