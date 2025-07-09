@@ -8,13 +8,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from pydantic import ValidationError
-
-from models import AnalysisRequest, AnalysisResponse, HeadPose
-from cv_analyzer import VisionAnalyzer  # Your own head pose estimation module
-from deepface import DeepFace
-
-import traceback
 from datetime import datetime
+import traceback
+
+from models.models import AnalysisRequest, AnalysisResponse, HeadPose
+from cv_analyzer import VisionAnalyzer
+from deepface import DeepFace
 
 # Load environment variables
 load_dotenv()
@@ -26,31 +25,29 @@ CORS(app)
 
 # Load AI Models
 try:
-    # If VisionAnalyzer still uses dlib internally, you'll need to refactor it too.
-    shape_predictor_path = "shape_predictor_68_face_landmarks.dat"
-    # vision_analyzer = VisionAnalyzer(shape_predictor_path)
     vision_analyzer = VisionAnalyzer()
     print("✅ AI Models loaded successfully.")
 except Exception as e:
     print(f"❌ Error loading AI models: {e}")
     raise e
 
-# Flag logic
+# Flag generator
 def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> list[str]:
     flags = []
+
     if report.head_pose:
         if report.head_pose.yaw > 20 or report.head_pose.yaw < -20:
             flags.append("CANDIDATE_LOOKING_AWAY")
         if report.head_pose.pitch > 15:
             flags.append("CANDIDATE_LOOKING_DOWN")
+
     if report.people_count > 1:
         flags.append("MULTIPLE_FACES_DETECTED")
     if not report.face_detected:
         flags.append("FACE_NOT_DETECTED")
     if request_data.focus_lost_count > 0:
         flags.append("BROWSER_FOCUS_LOST")
-    
-    # Check for suspicious keystrokes
+
     suspicious_keys = {
         "ctrl+c": "COPY_ACTION_DETECTED",
         "ctrl+v": "PASTE_ACTION_DETECTED",
@@ -59,13 +56,13 @@ def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> l
         "alt+tab": "WINDOW_SWITCH_DETECTED",
         "ctrl+tab": "TAB_SWITCH_DETECTED",
         "cmd+tab": "CMD_TAB_SWITCH_DETECTED",
-        "paste-event": "PASTE_ACTION_DETECTED"  # For macOS clients
+        "paste-event": "PASTE_ACTION_DETECTED"
     }
 
     for combo in request_data.keystroke_map:
-        key = combo.lower()
-        if key in suspicious_keys:
-            flags.append(suspicious_keys[key])
+        if combo.lower() in suspicious_keys:
+            flags.append(suspicious_keys[combo.lower()])
+
     return flags
 
 # Main analysis route
@@ -81,11 +78,10 @@ def analyze():
         frame = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
         if frame is None:
             raise ValueError("Decoded image is None")
-    except Exception as e:
+    except Exception:
         return jsonify({"error": "Invalid base64 image"}), 400
 
     try:
-        # Run your own analysis (head pose, etc.)
         vision_results = vision_analyzer.analyze_frame(frame)
         head_pose_data = HeadPose(**vision_results["head_pose"]) if vision_results["head_pose"] else None
 
@@ -95,37 +91,30 @@ def analyze():
                 img_path=frame,
                 actions=['emotion'],
                 enforce_detection=False,
-                detector_backend='opencv'  # Use OpenCV for face detection
+                detector_backend='opencv'
             )
             if isinstance(analysis_result, list) and len(analysis_result) > 0:
                 dominant_emotion_result = analysis_result[0]['dominant_emotion']
                 print("📸 DeepFace result:", analysis_result)
-        except Exception as e:
+        except Exception:
             print("❌ DeepFace analysis failed:")
             traceback.print_exc()
 
-        # Debug output before response
         print("🧠 dominant_emotion_result =", dominant_emotion_result)
         print("🧠 head_pose_data =", head_pose_data)
         print("🧠 vision_results =", vision_results)
 
-        try:
-            response = AnalysisResponse(
-                face_detected=vision_results["face_detected"],
-                people_count=vision_results["people_count"],
-                head_pose=head_pose_data,
-                dominant_emotion=dominant_emotion_result,
-                flags=[],
-                timestamp=datetime.utcnow().isoformat()
-            )
-        except Exception as e:
-            print("❌ Failed to create AnalysisResponse:")
-            traceback.print_exc()
-            return jsonify({"error": "Response formatting failed", "details": str(e)}), 500
+        response = AnalysisResponse(
+            face_detected=vision_results["face_detected"],
+            people_count=vision_results["people_count"],
+            head_pose=head_pose_data,
+            dominant_emotion=dominant_emotion_result,
+            flags=[],
+            timestamp=datetime.utcnow().isoformat()
+        )
 
         response.flags = generate_flags(response, request_data)
         return jsonify(response.dict())
-
 
     except Exception as e:
         print("❌ General processing error:")

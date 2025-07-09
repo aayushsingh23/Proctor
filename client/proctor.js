@@ -96,7 +96,7 @@ async function startProctoring() {
         keystrokeCount = 0;
         focusLostCount = 0;
 
-    }, 10000);
+    }, 3000);
 }
 
 startProctoring();
