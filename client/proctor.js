@@ -9,7 +9,7 @@ const API_ENDPOINT = 'http://127.0.0.1:5000/analyze';
 
 let keystrokeCount = 0;
 let focusLostCount = 0;
-suspiciousKeysThisInterval.clear();
+// suspiciousKeysThisInterval.clear();
 
 // --- Task 1: Handling Browser Change (Focus Loss) ---
 document.addEventListener('visibilitychange', () => {
@@ -96,7 +96,7 @@ async function startProctoring() {
         keystrokeCount = 0;
         focusLostCount = 0;
 
-    }, 3000);
+    }, 10000);
 }
 
 startProctoring();

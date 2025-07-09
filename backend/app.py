@@ -95,7 +95,7 @@ def analyze():
                 img_path=frame,
                 actions=['emotion'],
                 enforce_detection=False,
-                detector_backend='mediapipe'  # <<< changed from 'dlib'
+                detector_backend='opencv'  # Use OpenCV for face detection
             )
             if isinstance(analysis_result, list) and len(analysis_result) > 0:
                 dominant_emotion_result = analysis_result[0]['dominant_emotion']
