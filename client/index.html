@@ -1,13 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Proctoring Session</title>
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
     <h1>Proctoring In Progress...</h1>
-    <video id="video" width="480" height="360" autoplay muted></video>
+
+    <div id="container">
+        <div id="video-container">
+            <video id="video" autoplay muted></video>
+        </div>
+
+        <div id="response-container">
+            <div class="response-item">
+                <span class="response-label">Face Status:</span>
+                <span class="response-value" id="faceDetected">-</span>
+            </div>
+            <div class="response-item">
+                <span class="response-label">People Visible:</span>
+                <span class="response-value" id="peopleCount">-</span>
+            </div>
+            <div class="response-item">
+                <span class="response-label">Head Orientation:</span>
+                <span class="response-value" id="headPose">-</span>
+            </div>
+            <div class="response-item">
+                <span class="response-label">Emotional State:</span>
+                <span class="response-value" id="emotion">-</span>
+            </div>
+            <div class="response-item">
+                <span class="response-label">Alerts Triggered:</span>
+                <div id="flags">-</div>
+            </div>
+            <div class="response-item">
+                <span class="response-label">Last Updated:</span>
+                <span class="response-value" id="timestamp">-</span>
+            </div>
+        </div>
+    </div>
+    <button id="endProctoringBtn" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">
+        End Proctoring
+    </button>
+
     <canvas id="canvas" style="display:none;"></canvas>
     <script src="proctor.js"></script>
 </body>

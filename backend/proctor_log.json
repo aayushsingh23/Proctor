@@ -1,0 +1,17 @@
+[
+    {
+        "face_detected": true,
+        "people_count": 1,
+        "head_pose": {
+            "pitch": 175.19,
+            "yaw": 1.91,
+            "roll": -1.38
+        },
+        "dominant_emotion": "relaxed",
+        "flags": [
+            "CANDIDATE_LOOKING_DOWN",
+            "BROWSER_FOCUS_LOST"
+        ],
+        "timestamp": "2025-07-09T14:31:49.375061+05:30"
+    }
+]

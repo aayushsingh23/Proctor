@@ -1,14 +1,14 @@
-# backend/app.py
-
 import base64
 import numpy as np
 import cv2
 import os
+import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from pydantic import ValidationError
 from datetime import datetime
+from pytz import timezone
 import traceback
 
 from models.models import AnalysisRequest, AnalysisResponse, HeadPose
@@ -23,6 +23,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 CORS(app)
 
+# Session logs (in-memory)
+session_logs = []
+
 # Load AI Models
 try:
     vision_analyzer = VisionAnalyzer()
@@ -30,6 +33,24 @@ try:
 except Exception as e:
     print(f"❌ Error loading AI models: {e}")
     raise e
+
+# Emotion Fusion Mapping
+def fuse_emotions(emotions: dict) -> str:
+    nervous = (emotions['fear'] + emotions['angry'] + emotions['disgust']) / 3
+    relaxed = (emotions['happy'] + emotions['neutral']) / 2
+    happy = emotions['happy']
+    sad = emotions['sad']
+    fear = emotions['fear']
+
+    composite = {
+        "nervous": nervous,
+        "relaxed": relaxed,
+        "happy": happy,
+        "sad": sad,
+        "fear": fear
+    }
+
+    return max(composite, key=composite.get)
 
 # Flag generator
 def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> list[str]:
@@ -64,8 +85,34 @@ def generate_flags(report: AnalysisResponse, request_data: AnalysisRequest) -> l
             flags.append(suspicious_keys[combo.lower()])
 
     return flags
+# ... [IMPORTS, INIT, AND CONFIGS AS BEFORE] ...
 
-# Main analysis route
+# Function to interpret head pose angles into plain English
+def describe_head_pose(yaw: float, pitch: float, roll: float) -> str:
+    orientation = []
+
+    if yaw > 20:
+        orientation.append("looking right")
+    elif yaw < -20:
+        orientation.append("looking left")
+
+    if pitch > 160:
+        orientation.append("looking down")
+    elif pitch < 30:
+        orientation.append("looking up")
+
+    if roll > 15:
+        orientation.append("head tilted right")
+    elif roll < -15:
+        orientation.append("head tilted left")
+
+    if not orientation:
+        return "facing forward"
+
+    return ", ".join(orientation)
+
+
+# === MAIN API ENDPOINT ===
 @app.route('/analyze', methods=['POST'])
 def analyze():
     try:
@@ -85,6 +132,7 @@ def analyze():
         vision_results = vision_analyzer.analyze_frame(frame)
         head_pose_data = HeadPose(**vision_results["head_pose"]) if vision_results["head_pose"] else None
 
+        # 🧠 Emotion Detection
         dominant_emotion_result = None
         try:
             analysis_result = DeepFace.analyze(
@@ -94,15 +142,23 @@ def analyze():
                 detector_backend='opencv'
             )
             if isinstance(analysis_result, list) and len(analysis_result) > 0:
-                dominant_emotion_result = analysis_result[0]['dominant_emotion']
-                print("📸 DeepFace result:", analysis_result)
+                emotions = analysis_result[0]['emotion']
+                dominant_emotion_result = fuse_emotions(emotions)
+                print("📸 DeepFace emotion fusion:", emotions)
         except Exception:
             print("❌ DeepFace analysis failed:")
             traceback.print_exc()
 
-        print("🧠 dominant_emotion_result =", dominant_emotion_result)
-        print("🧠 head_pose_data =", head_pose_data)
-        print("🧠 vision_results =", vision_results)
+        # 🧠 Head Orientation Description
+        head_pose_description = "Not detected"
+        if head_pose_data:
+            head_pose_description = describe_head_pose(
+                head_pose_data.yaw,
+                head_pose_data.pitch,
+                head_pose_data.roll
+            )
+
+        ist_time = datetime.now(timezone('Asia/Kolkata')).isoformat()
 
         response = AnalysisResponse(
             face_detected=vision_results["face_detected"],
@@ -110,11 +166,16 @@ def analyze():
             head_pose=head_pose_data,
             dominant_emotion=dominant_emotion_result,
             flags=[],
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=ist_time
         )
 
         response.flags = generate_flags(response, request_data)
-        return jsonify(response.dict())
+
+        # Prepare final payload with readable description
+        full_response = response.dict()
+        full_response['head_orientation_readable'] = head_pose_description
+
+        return jsonify(full_response)
 
     except Exception as e:
         print("❌ General processing error:")
