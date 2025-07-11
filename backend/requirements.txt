@@ -198,5 +198,9 @@ wheel==0.45.1
 wrapt==1.17.2
     # via tensorflow-intel
 
+tf-keras
+ultralytics opencv-python-headless numpy
+face-alignment
+
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
