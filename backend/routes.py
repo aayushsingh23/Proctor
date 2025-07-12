@@ -7,6 +7,7 @@ from datetime import datetime
 from pytz import timezone
 import traceback, base64, numpy as np, cv2
 from pydantic import ValidationError
+from fraud_check import match_faces
 
 routes = Blueprint('routes', __name__)
 visionAnalyzer = VisionAnalyzer()
@@ -15,6 +16,9 @@ visionAnalyzer = VisionAnalyzer()
 def fuseEmotions(emotions: dict) -> str:
     nervous = (emotions['fear'] + emotions['angry'] + emotions['disgust']) / 3
     relaxed = (emotions['happy'] + emotions['neutral']) / 2
+    happy = emotions['happy']
+    sad = emotions['sad']
+    fear = emotions['fear']
     composite = {
     "nervous": nervous,
     "relaxed": relaxed,
@@ -56,6 +60,26 @@ def handle_attire_check():
         return jsonify({'is_formal': result})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@routes.route('/fraud_check')
+def fraud_check():
+    return render_template('fraud_check.html')
+
+@routes.route('/verify_identity', methods=['POST'])
+def verify_identity():
+    try:
+        data = request.get_json()
+        id_image_b64 = data.get('id_image')
+        selfie_b64 = data.get('selfie')
+
+        result = match_faces(id_image_b64, selfie_b64)
+
+        return jsonify(result)
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+    
 
 # Route: Proctor Analysis API
 @routes.route('/analyze', methods=['POST'])

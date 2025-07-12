@@ -1,0 +1,106 @@
+/* Applies only to attire check page */
+.attire-check-body {
+    background-color: #f8f8f8;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.attire-check-wrapper {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.attire-check-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.attire-check-instruction {
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 600px;
+}
+
+.attire-check-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#videoPreview,
+#capturedPreview {
+    border: 2px solid black;
+    width: 320px;
+    height: 400px;
+    object-fit: cover;
+}
+
+.attire-check-countdown {
+    margin-top: 10px;
+    font-size: 20px;
+    color: red;
+}
+
+.attire-check-btn-center {
+    margin-top: 20px;
+}
+
+.attire-check-bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* Buttons */
+.btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-disabled {
+    background-color: #a0c5f8;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .attire-check-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .attire-check-bottom-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+}

@@ -73,3 +73,25 @@ h1 {
     border-radius: 5px;
     font-size: 13px;
 }
+
+.btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background-color: #a0c5f8;
+    cursor: not-allowed;
+}

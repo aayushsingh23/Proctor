@@ -80,6 +80,8 @@ def check_attire(base64_image: str) -> dict:
                 "error": "Invalid JSON from OpenAI",
                 "raw": output_text
             }
+            
+        return result
 
 
 

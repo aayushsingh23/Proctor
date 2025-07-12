@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Voice Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voice_check.css') }}">
+</head>
+
+<body class="voice-check-body">
+    <div class="voice-check-container">
+        <h2 class="voice-check-title">Voice Verification</h2>
+        <p class="voice-check-instruction">
+            Please speak the phrase you recorded previously, clearly and audibly.
+        </p>
+
+        <div class="voice-controls">
+            <button class="btn-blue" id="startRecordingBtn">Start Recording</button>
+            <button class="btn" id="stopRecordingBtn" disabled>Stop Recording</button>
+        </div>
+
+        <p id="recordingStatus">Recording duration: <span id="timer">0</span> sec</p>
+        <audio id="recordedAudio" controls style="display:none;"></audio>
+
+        <div class="voice-check-bottom-buttons">
+            <button class="btn" onclick="goBack()">Back</button>
+            <button class="btn-disabled" id="verifyBtn" disabled onclick="verifyVoice()">Verify</button>
+        </div>
+
+        <p id="verificationResult"></p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/voice_check.js') }}"></script>
+</body>
+
+</html>

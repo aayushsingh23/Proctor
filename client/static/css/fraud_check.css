@@ -1,0 +1,139 @@
+/* Applies only to fraud check page */
+.fraud-body {
+    background-color: #f8f8f8;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.fraud-container {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fraud-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Live video and selfie preview layout */
+.fraud-preview-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    /* Reduced gap */
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.fraud-video-box video {
+    border: 2px solid black;
+    width: 320px;
+    height: 400px;
+    object-fit: cover;
+}
+
+.fraud-upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.fraud-upload-box input[type="file"] {
+    width: 240px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.fraud-upload-box img {
+    border: 2px solid black;
+    width: 320px;
+    height: 240px;
+    object-fit: cover;
+}
+
+/* Verification result directly below selfie */
+.verification-result {
+    font-size: 14px;
+    color: green;
+    margin-top: 6px;
+}
+
+/* Capture button centered */
+.fraud-capture-btn {
+    margin-top: 20px;
+}
+
+
+/* Bottom controls */
+.fraud-bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* Buttons */
+
+.btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background-color: #a0c5f8;
+    cursor: not-allowed;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .fraud-preview-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .fraud-bottom-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .fraud-upload-box input[type="file"] {
+        width: 100%;
+    }
+
+    .fraud-container {
+        padding: 20px;
+    }
+
+    .fraud-video-box video,
+    .fraud-upload-box img {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+    }
+}

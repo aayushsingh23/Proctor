@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fraud Check</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fraud_check.css') }}">
+</head>
+
+<body class="fraud-body">
+    <div class="fraud-container">
+        <h2 class="fraud-title">Identity Verification</h2>
+
+        <div class="fraud-preview-row">
+            <!-- Left: Live video -->
+            <div class="fraud-video-box">
+                <video id="selfieVideo" autoplay muted></video>
+            </div>
+
+            <!-- Right: Upload + Captured image -->
+            <div class="fraud-upload-box">
+                <input type="file" id="idImageInput" accept="image/*" />
+                <img id="selfiePreview" alt="Selfie Preview" />
+                <p id="result"></p>
+            </div>
+        </div>
+
+        <!-- Countdown if needed -->
+        <div id="countdown" class="fraud-countdown"></div>
+
+        <!-- Capture button below center -->
+        <div class="fraud-capture-btn">
+            <button id="captureSelfieBtn" class="btn ">Capture</button>
+        </div>
+
+        <!-- Bottom controls -->
+        <div class="fraud-bottom-buttons">
+            <button class="btn btn-blue" onclick="goBack()">Back</button>
+            <button id="verifyBtn" class="btn btn-blue">Verify Identity</button>
+            <button id="continueToProctoring" class="btn btn-disabled" disabled>Continue</button>
+        </div>
+
+        <canvas id="selfieCanvas" style="display: none;"></canvas>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/fraud_check.js') }}"></script>
+</body>
+
+</html>

@@ -3,21 +3,37 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Attire Check</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/attire_check.css') }}">
 </head>
 
-<body>
-    <h2>📸 Attire Check</h2>
-    <video id="video" autoplay width="480" height="360"></video>
-    <canvas id="canvas" width="480" height="360" style="display:none;"></canvas>
-    <br />
+<body class="attire-check-body">
+    <div class="attire-check-wrapper">
+        <h2 class="attire-check-title">Identity Verification</h2>
 
-    <button id="captureBtn">Capture & Check Attire</button>
-    <button id="continueBtn" style="display:none;">Continue to Proctoring</button>
+        <div class="attire-check-instruction">
+            Please stand such that your whole body gets aligned to the pose edges on screen.<br>
+            Once you click capture, it will take 3 seconds to click the photo.
+        </div>
 
-    <p id="attireResult"></p>
+        <div class="attire-check-container">
+            <video id="videoPreview" autoplay muted></video>
+            <img id="capturedPreview" alt="Captured preview" />
+        </div>
+
+        <div id="countdown" class="attire-check-countdown"></div>
+
+        <div class="attire-check-btn-center">
+            <button class="btn" id="captureBtn" onclick="startCapture()">Capture</button>
+        </div>
+
+        <div class="attire-check-bottom-buttons">
+            <button class="btn" onclick="goBack()">Back</button>
+            <button class="btn" id="continueBtn" disabled onclick="continueToNext()">Continue</button>
+        </div>
+    </div>
+
+    <canvas id="captureCanvas" width="320" height="400" style="display:none;"></canvas>
 
     <script src="{{ url_for('static', filename='js/attireCheck.js') }}"></script>
 </body>
