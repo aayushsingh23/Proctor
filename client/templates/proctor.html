@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Proctoring Session</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 
 </head>
 
@@ -48,7 +49,7 @@
     </button>
 
     <canvas id="canvas" style="display:none;"></canvas>
-    <script src="proctor.js"></script>
+    <script src="{{ url_for('static', filename='js/proctor.js') }}"></script>
 </body>
 
 </html>

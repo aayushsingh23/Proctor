@@ -201,6 +201,7 @@ wrapt==1.17.2
 tf-keras
 ultralytics opencv-python-headless numpy
 face-alignment
+openai>=1.0.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

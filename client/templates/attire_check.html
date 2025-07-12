@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attire Check</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <h2>📸 Attire Check</h2>
+    <video id="video" autoplay width="480" height="360"></video>
+    <canvas id="canvas" width="480" height="360" style="display:none;"></canvas>
+    <br />
+
+    <button id="captureBtn">Capture & Check Attire</button>
+    <button id="continueBtn" style="display:none;">Continue to Proctoring</button>
+
+    <p id="attireResult"></p>
+
+    <script src="{{ url_for('static', filename='js/attireCheck.js') }}"></script>
+</body>
+
+</html>

@@ -1,5 +1,3 @@
-# cv_analyzer.py
-
 import cv2
 import numpy as np
 from ultralytics import YOLO
@@ -7,38 +5,48 @@ import face_alignment
 
 class VisionAnalyzer:
     def __init__(self):
-        self.face_detector = YOLO("models/yolov8n-face.pt")
-        self.face_detector.model.fuse()
+        """
+        Load face detection (YOLOv8) and landmark detection (face_alignment) models.
+        Use case: Detect faces and estimate head pose in a given frame.
+        """
+        self.faceDetector = YOLO("models/yolov8n-face.pt")
+        self.faceDetector.model.fuse()
         self.fa = face_alignment.FaceAlignment(
             face_alignment.LandmarksType.TWO_D,
             flip_input=False,
             device='cpu'
         )
 
-    def analyze_frame(self, frame):
+    def analyzeFrame(self, frame):
+        """
+        Analyze the frame to detect faces and compute head orientation.
+        Returns:
+            dict with keys: face_detected, people_count, head_pose (yaw, pitch, roll)
+        Use case: Core vision engine for your proctoring system.
+        """
         h, w = frame.shape[:2]
-        preds = self.face_detector.predict(source=frame, imgsz=640, verbose=False)[0]
+        preds = self.faceDetector.predict(source=frame, imgsz=640, verbose=False)[0]
 
-        face_detected = False
-        people_count = 0
-        head_pose = None
+        faceDetected = False
+        peopleCount = 0
+        headPose = None
 
         for box in preds.boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
-            face_detected = True
-            people_count += 1
+            faceDetected = True
+            peopleCount += 1
 
-            face_crop = frame[y1:y2, x1:x2]
-            landmarks = self.fa.get_landmarks_from_image(face_crop)
+            faceCrop = frame[y1:y2, x1:x2]
+            landmarks = self.fa.get_landmarks_from_image(faceCrop)
 
             if landmarks is None:
                 continue
 
             lm = landmarks[0]
-            # adjust to original coordinates
-            lm += np.array([x1, y1])
+            lm += np.array([x1, y1])  # Adjust to full-frame coordinates
 
-            image_points = np.array([
+            # 6 facial landmarks for pose estimation
+            imagePoints = np.array([
                 lm[30],  # Nose tip
                 lm[8],   # Chin
                 lm[36],  # Left eye outer corner
@@ -47,7 +55,8 @@ class VisionAnalyzer:
                 lm[54],  # Right mouth corner
             ], dtype=np.float64)
 
-            model_points = np.array([
+            # 3D model reference points
+            modelPoints = np.array([
                 [0.0, 0.0, 0.0],
                 [0.0, -63.6, -12.5],
                 [-43.3, 32.7, -26.0],
@@ -56,19 +65,20 @@ class VisionAnalyzer:
                 [28.9, -28.9, -24.1]
             ], dtype=np.float64)
 
-            focal_length = w
-            camera_matrix = np.array([
-                [focal_length, 0, w / 2],
-                [0, focal_length, h / 2],
+            focalLength = w
+            cameraMatrix = np.array([
+                [focalLength, 0, w / 2],
+                [0, focalLength, h / 2],
                 [0, 0, 1]
             ], dtype=np.float64)
 
-            dist_coeffs = np.zeros((4, 1))
+            distCoeffs = np.zeros((4, 1))
 
-            success, rot, _ = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs)
+            success, rot, _ = cv2.solvePnP(modelPoints, imagePoints, cameraMatrix, distCoeffs)
             if success:
                 R, _ = cv2.Rodrigues(rot)
                 sy = np.sqrt(R[0, 0]**2 + R[1, 0]**2)
+
                 if sy < 1e-6:
                     x = np.arctan2(-R[1, 2], R[1, 1])
                     y = np.arctan2(-R[2, 0], sy)
@@ -78,12 +88,16 @@ class VisionAnalyzer:
                     y = np.arctan2(-R[2, 0], sy)
                     z = np.arctan2(R[1, 0], R[0, 0])
 
-                head_pose = {
+                headPose = {
                     "yaw": round(np.degrees(y), 2),
                     "pitch": round(np.degrees(x), 2),
                     "roll": round(np.degrees(z), 2)
                 }
 
-            break
+            break  # Analyze only the first detected face
 
-        return {"face_detected": face_detected, "people_count": people_count, "head_pose": head_pose}
+        return {
+            "face_detected": faceDetected,
+            "people_count": peopleCount,
+            "head_pose": headPose
+        }
